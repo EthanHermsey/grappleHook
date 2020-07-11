@@ -1,0 +1,124 @@
+html,
+body {
+  margin: 0;
+  padding: 0;  
+}
+
+canvas {
+  display: block;
+}
+
+
+
+
+
+.mcPressed {
+  
+	background-color: rgba(240, 240, 240, 0.7) !important;
+
+}
+
+.mcHidden {
+	display: none;
+}
+  
+  
+  
+  
+#mcJoystickContainer {
+
+	z-index: 9999999;
+	position: fixed;
+
+	bottom: 5vh;
+	left: 5vh;
+	height: 40vh;
+	width: 40vh;
+
+	border-radius: 50%;
+
+	border-style: solid;
+	border-width: 2px;
+	border-color: rgb(240, 240, 240);
+
+	box-shadow: inset 0 0 15px 0px rgb(240, 240, 240);
+
+}
+
+#mcStick {
+
+	position: absolute;
+
+	top: 12vh;
+	left: 12vh;
+	width: 16vh;
+	height: 16vh;
+
+	border-radius: 50%;
+
+	border-style: solid;
+	border-width: 2px;
+	border-color: rgb(240, 240, 240);
+
+	background-color: rgba(240, 240, 240, 0.4);
+
+	box-shadow: inset 0 0 15px 0px rgb(240, 240, 240);
+
+}
+
+
+
+
+#mcButtonContainer {
+
+	position: fixed;
+	z-index: 999;
+
+	bottom: 5vh;
+	right: 5vh;
+	height: 40vh;
+	width: 40vh;
+
+	border-radius: 50%;
+
+}
+
+#mcButtonTrack {
+
+	position: absolute;
+
+	top: 17.5vh; 
+	left: 17.5vh;
+	height: 22.5vh;
+	width: 5vh;
+
+	border-radius: 5vh;
+
+	border-style: solid;
+	border-width: 2px;
+	border-color: rgba(240, 240, 240, 0.4);
+
+	box-shadow: inset 0 0 10px 0px rgba(240, 240, 240, 0.6);
+}
+
+#mcButton {
+
+	position: absolute;
+
+	top: 12vh;
+	left: 12vh;
+	width: 16vh;
+	height: 16vh;
+
+	border-radius: 50%;
+
+	border-style: solid;
+	border-width: 2px;
+	border-color: rgb(240, 240, 240);
+
+	box-shadow: inset 0 0 10px 0px rgb(240, 240, 240);
+
+	background-color: rgba(240, 240, 240, 0.1);
+
+}
+  

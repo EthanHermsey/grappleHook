@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+	
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-157720343-2"></script>
+	<script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);};gtag('js', new Date());gtag('config', 'UA-157720343-2');</script>
+	
+	<script src="//cdn.rawgit.com/mrdoob/three.js/master/build/three.min.js"></script>
+
+	<script src="./js/rope.js"></script>
+	<script src="./js/target.js"></script>
+	<script src="./js/player.js"></script>
+	<script src="./js/mobilecontrols.js"></script>
+	<script src="./js/scoreboard.js"></script>
+	<script src="./js/gamemanager.js"></script>
+	<script src="./js/main.js"></script>
+
+	<link rel="stylesheet" href="./resources/style.css">
+	<link rel="stylesheet" href="./resources/mobilecontrols.css">
+</head>
+<body>	
+	<div id="main">
+		<div id="effectContainer">
+			<h1> grapple hook </h1>
+			<div id="titleEffect"></div>
+		</div>		
+		<p id="controlsTitle">CONTROLS</p>
+		<table id="controls">
+			<tr>
+				<td>[ MOUSE BUTTONS ]</td>
+				<td>Shoot grapple</td>
+			</tr>
+			<tr>
+				<td>[ WASD ]</td>
+				<td>Move / Control swing</td>
+			</tr>			
+			<tr>
+				<td>[ SHIFT ]</td>
+				<td>Retract rope / Increase swinging speed</td>
+			</tr>
+			<tr>
+				<td>[ SPACE ]</td>
+				<td>Jump</td>
+			</tr>
+			<tr>
+				<td>[ R ]</td>
+				<td>Restart</td>
+			</tr>
+		</table>
+		<br>
+		<ul id="howto">
+			<li>Keep eyes on the target as much as possible.</li>
+			<li>Keep the rope tight as much as possible.</li>
+			<li>Use the shift key to speed up the swing.</li>
+			<li>Release at the right timing to use the swinging force to propel yourself where you want to go.</li>
+			<li>Don't move into the swing radius ( see illustration ).</li>
+		</ul>
+		<div id="psY">
+			<img id="psYImg" src="./resources/img/psY.png" alt="">
+		</div>
+		<div id="psN">
+			<img id="psNImg" src="./resources/img/psN.png" alt="">
+		</div>
+		<p id="scoreboardTitle">SCOREBOARD</p>
+		<div id="scoreboardGrid"></div>
+		<div id="resetScoreboard" title="Reset scoreboard."></div>	
+		<div id="fullscreenText">Fullscreen</div>
+		<input type="checkbox" name="fullscreenCheck" id="fullscreenCheck" checked=true class="hidden">
+		<div id="fullscreenDisplay"></div>
+	</div>
+	<div id="three" class="hidden">
+		<div id="time">0:00</div>
+		<div id='crosshair'></div>
+	</div>
+	<div id="levelScreen" class="hidden">
+		<div id="levelScreenContainer">
+			<p>Your Time:</p>
+			<div id="levelTime"></div>
+			<p>Level Record:</p>
+			<div id="scoreboardTime"></div>
+			<div id="retry">Retry</div>
+			<div id="continue">Next</div>
+		</div>
+	</div>	
+</body>
+</html>

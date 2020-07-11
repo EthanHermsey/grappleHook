@@ -1,0 +1,699 @@
+
+		@font-face {
+			font-family: 'neon';
+			src: url('./font/neon.ttf')   format('truetype'); /* IE9 Compat Modes */			
+		}
+		*{
+			font-family: 'neon';
+			font-weight: 500;
+			user-select: none;
+		}
+		html, body{
+			
+			margin: 0;
+			padding: 0;
+			
+			width: 100%;
+			height: 100%;
+			
+			background-color: rgb(51, 51, 51);
+			background-image: url("./img/sky.png");
+			background-size: cover;
+			background-position: center;
+
+			overflow: hidden;
+		}
+		.hidden{
+			display: none !important;
+		}
+
+		#three, #main, #levelScreen{
+			
+			position: fixed;
+			
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+
+		}
+
+
+
+
+
+
+
+
+
+
+		/* title */
+		#main h1{
+
+			text-align: center;
+			font-size: 8vw;
+			font-weight: 700;
+
+			color: yellow;
+		}
+
+		#effectContainer{
+
+			position: relative;
+
+		}
+
+		#titleEffect{
+
+			position: absolute;
+
+			z-index: 1;			
+			
+			margin-top: -15%;
+			width: 100%;
+			height: 100%;
+
+			backdrop-filter: blur(0px);			
+
+		}
+
+
+
+
+
+
+
+
+
+
+		/* controls section */
+		#main #controls{
+			
+			position: fixed;
+
+			margin: 0;
+
+			top: 46vh;
+			left: 2vw;
+			width: 50vw;
+			height: 20vh;
+
+			padding-left: 2vw;			
+
+			border-style: inset;
+			border-color: yellow;
+
+			background-image: url("./img/sky.png");
+			background-size: cover;
+			background-position: center;
+		}
+
+		#controlsTitle{
+
+			position: fixed;
+
+			top: 21vh;
+			left: 1vw;
+			width: 50vw;
+			height: 5vh;
+
+			color: yellow !important;
+			font-family: 'neon' !important;
+			font-weight: 500 !important;
+			font-size: 3.5vw;
+			text-align: center;
+
+		}
+
+		#main #controls td{
+			color: yellow !important;
+			margin-top: 0;
+
+			font-size: 1.1vw;
+			letter-spacing: 5px;
+			font-weight: 500;
+			font-family: 'Open Sans',helvetica;
+
+		}
+
+		#main p{
+
+			color: lime;
+			margin-top: 15vh;
+			letter-spacing: 5px;
+			text-align: center;
+			font-weight: 500;
+			font-family: 'Open Sans',helvetica;
+		}
+
+
+
+
+
+		#howto {
+
+			position: fixed;
+
+			margin: 0;
+
+			top: 67vh;
+			left: 2vw;
+			width: calc( 35vw - 7px);
+			height: 27vh;
+
+			border-style: inset;
+			border-color: yellow;
+
+			background-image: url("./img/sky.png");
+			background-size: cover;
+			background-position: center;
+
+			overflow-y: scroll;
+
+		}
+		#howto::-webkit-scrollbar{
+			width:5px;
+			background: rgba(0, 0, 0, 0);
+		}
+		#howto::-webkit-scrollbar-thumb{
+			background: yellow
+		}
+		#howto::-webkit-scrollbar-thumb:hover{
+			background: goldenrod
+		}
+
+		#howto li{
+
+			margin-top: 1vh;
+			margin-bottom: 1.8vh;
+
+			color: yellow;
+
+			font-size: 1.05vw;
+			letter-spacing: 5px;
+			font-weight: 500;
+			font-family: 'Open Sans',helvetica;
+
+		}
+
+
+		#psN, #psY{
+			position: fixed;
+
+			border-style: inset;
+			border-color: yellow;
+
+			background-image: url("./img/sky.png");
+			background-size: cover;
+			background-position: center;
+
+			display: grid;
+			justify-items: center;
+		}
+
+		#main #psN{
+			
+			top: 67vh;
+			left: 40vw;
+			width: calc( 12vw - 7px);
+			height: 12.5vh;
+
+		}
+
+		#main #psY{
+
+			top: 81.5vh;
+			left: 40vw;
+			width: calc( 12vw - 7px);
+			height: 12.5vh;
+
+		}
+
+		#psYImg, #psNImg{
+			height: 100%;
+		}		
+
+
+
+
+
+
+
+		/* socreboard section */
+		#scoreboardTitle{
+
+			position: fixed;
+
+			top: 21vh;
+			left: 50vw;
+			width: 50vw;
+			height: 5vh;
+
+			color: yellow !important;
+			font-family: 'neon' !important;
+			font-weight: 500 !important;
+			font-size: 3.5vw;
+			text-align: center;
+
+		}
+
+		#scoreboardGrid{
+
+			position: fixed;
+
+			top: 46vh;
+			left: 55vw;
+			width: 40vw;
+			height: 48vh;
+
+			background-image: url("./img/sky.png");
+			background-size: cover;
+			background-position: center;
+
+			border-style: inset;
+			border-color: yellow;
+
+			display: grid;
+			grid-template-columns: 20% 40% 40%;
+			align-items: center;
+
+			font-size: 1.2em;			
+
+			overflow-y: scroll;
+
+		}
+		#scoreboardGrid::-webkit-scrollbar{
+			width:5px;
+			background: rgba(0, 0, 0, 0);
+		}
+		#scoreboardGrid::-webkit-scrollbar-thumb{
+			background: yellow
+		}
+		#scoreboardGrid::-webkit-scrollbar-thumb:hover{
+			background: goldenrod
+		}
+
+		#scoreboardGrid p, #scoreboardGrid span{
+			margin: 5px;
+			color: yellow;
+
+			font-weight: 500;
+			font-family: 'Open Sans',helvetica;
+			font-size: 2.1vh;
+			text-align: center;
+		}
+
+		#scoreboardGrid #playbutton{
+
+			height: 40px;
+			
+			background-image: url("./img/playbutton.png");
+			background-size: contain;
+			background-position: center;
+			background-repeat: no-repeat;
+
+		}
+
+		#scoreboardGrid #playbutton:hover{
+
+			filter: hue-rotate( 243deg );
+
+		}
+
+
+
+		#resetScoreboard{
+
+			position: fixed;
+
+			top: 92vh;
+			left: 96vw;
+			width: 3.5vh;
+			height: 3.5vh;
+
+			background-image: url("./img/trash.png");
+			background-size: contain;
+			background-position: center;
+			background-repeat: no-repeat;
+
+		}
+
+		#resetScoreboard:hover{
+
+			filter: hue-rotate( 243deg );
+
+		}
+
+		#fullscreenText{
+
+			position: fixed;
+
+			top: 96.5vh;
+			right: 4.5vw;		
+			height: 2vh;
+
+			text-align: right;
+			font-size: 1vw;
+			letter-spacing: 5px;
+			font-weight: 500;
+			font-family: 'Open Sans',helvetica;
+
+			color: yellow;
+
+		}
+
+		#fullscreenDisplay{
+
+			position: fixed;
+
+			top: 96.5vh;
+			left: 96vw;
+			width: 2.25vh;
+			height: 2.25vh;
+
+			margin-left: 0.75vh;			
+
+			background-color: rgba(0,0,0,0);
+
+			border-color: yellow;
+			border-width: 1px;
+			border-style: solid;
+			border-radius: 5px;
+
+			box-sizing: border-box;
+		}
+
+		#fullscreenDisplay:hover{
+
+			background-color: rgba(255, 255, 0, 0.1);
+
+		}
+
+		#fullscreenDisplay::after{
+
+			content: '';
+
+			position: absolute;
+			top: 0.15vh;
+			left: 0.15vh;
+			width: 1.85vh;
+			height: 1.85vh;
+
+			background-image: url("./img/checkmark.png");
+			background-size: cover;
+			background-position: center;
+
+			display: none;
+		}
+
+		#main #fullscreenCheck:checked ~ #fullscreenDisplay:after {
+
+			display: block;
+
+		}
+
+
+
+
+
+		/* croshair.... */
+		#crosshair{
+			position: fixed;
+			z-index: 100;
+			
+			left: calc(50vw - 2.5px);
+			top: calc(50vh - 2.5px);
+			width:5px;
+			height:5px;
+
+			border-radius: 2.5px;
+
+			background-color: white;
+		}
+
+
+
+
+
+
+
+
+
+
+		/* time counter */
+		#time{
+			position: fixed;
+			z-index: 100;
+
+			top: 30px;
+			left: 45vw;
+			height: 5vh;
+			width: 10vw;
+
+			color: yellow;
+
+			font-weight: 500;
+			font-family: 'Open Sans',helvetica;
+			font-size: 2em;			
+			text-align: center;
+		}
+
+
+
+
+
+
+
+
+		/* loading screen */
+		#loadingScreen{
+
+			z-index: 99999999;
+
+			margin-top: 45vh;
+
+			text-align: center;
+			font-size: 8vw;
+			font-weight: 700;
+
+			color: yellow;
+		}
+
+
+
+
+
+
+
+
+
+		/* time display inbetween levels */
+		#levelScreen{
+			z-index: 99;
+			
+			backdrop-filter: blur(2px);
+
+		}
+
+		#levelScreenContainer{
+
+			position: fixed;
+
+			top: 30vh;
+			left: 30vw;
+			height: 40vh;
+			width: 40vw;
+
+			background-image: url("./img/sky.png");
+			background-size: cover;
+			background-position: center;
+
+			border-style: outset;
+			border-color: yellow;
+
+			display: grid;
+
+			grid-template-columns: 50% 50%;
+			grid-template-rows: repeat(3, 33.33%);
+			justify-items: center;
+			align-items: center;
+		}
+
+		#levelScreenContainer p, #levelScreenContainer span{
+
+			margin: 0;
+			margin-top: 10%;
+
+			color: yellow;
+
+			font-weight: 500;
+			font-family: 'Open Sans',helvetica;
+			font-size: 3.5vh;
+			text-align: center;
+		}
+
+		#milli{
+			font-size: 1.3vh !important;
+		}
+
+		#levelTime, #scoreboardTime{
+			
+			margin-top: 5%;
+
+			color: yellow;
+
+			font-weight: 500;
+			font-family: 'Open Sans',helvetica;
+			font-size: 3.5vh;
+			text-align: center;
+
+		}
+
+		#continue, #retry{
+
+			width: 80%;
+			height: 40%;
+			padding-top: 10px;
+			padding-bottom: 10px;
+
+			background-color:rgba(200, 200, 200, 0.5);
+
+			border-style: outset;
+			border-color: yellow;
+
+			color: yellow;
+
+			font-weight: 700;
+			font-size: 3vw;
+			text-align: center;
+
+			user-select: none;
+		}
+		#continue:hover, #retry:hover{
+
+			cursor: pointer;
+
+		}
+
+		#continue:active, #retry:active{
+
+			border-style: inset;
+			
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media only screen and (max-width: 750px) {
+
+
+	html, body{
+
+		height: 100%;
+		overflow: auto;
+		user-select: auto;
+
+	}
+
+
+
+	#main h1{
+
+		font-size: 5vh;
+		
+	}
+
+	
+
+
+	#main #controls{
+			
+		display: none;
+	}
+
+	#controlsTitle{
+
+		display: none;
+
+	}
+
+	#howto {
+
+		display: none;
+	}
+
+	
+	#main #psN{
+			
+		display: none;
+
+	}
+
+	#main #psY{
+
+		display: none;
+
+	}
+
+
+
+	#scoreboardTitle{
+		
+		position: fixed;
+
+		top: -2vh;
+		left: 1vw;
+		width: 98vw;
+		height: 5vh;
+
+		font-size: 8vw;
+
+	}
+	#scoreboardGrid{
+		
+		top: 20vh;
+		left: 1vw;
+		width: calc( 98vw - 5px);
+		height: 63vh;
+
+	}
+
+	
+
+	#resetScoreboard{
+
+		top: 85vh;
+		left: calc( 98vw - 3vh );
+
+	}
+
+
+	#fullscreenText{
+
+		display: none;
+
+	}
+
+	#fullscreenCheck{
+
+		display: none;
+
+	}
+
+	#fullscreenDisplay{
+		display: none;
+	}
+
+}
