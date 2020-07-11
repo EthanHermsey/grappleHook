@@ -1,19 +1,38 @@
 
 class Scoreboard {
 
-	constructor( savedScoreboard, maxLevels, levelNames ) {
+	constructor( savedScoreboard, levelNames, levelCategories ) {
 
-		this.maxLevels = maxLevels;
-		this.levels = savedScoreboard.levels;
+		console.log( typeof ( savedScoreboard ) );
+
+		this.scores = ( Array.isArray( savedScoreboard ) ) ? savedScoreboard : [];
+
 		this.levelNames = levelNames;
+		this.levelCategories = levelCategories;
 
 	}
 
-	newScore( level, score, min, sec, millis ) {
+	reset() {
 
-		if ( ! this.levels[ level ] || score < this.levels[ level ].score ) {
+		this.scores = [];
+		this.save();
+		this.updateScoreboardGrid();
 
-			this.levels[ level ] = {
+	}
+
+	save() {
+
+		localStorage.setItem( 'grappleHookScoreboard', JSON.stringify( this.scores ) );
+
+	}
+
+	addScore( category, level, score, min, sec, millis ) {
+
+		if ( ! this.scores[ category ] ) this.scores[ category ] = [];
+
+		if ( ! this.scores[ category ][ level ] || score < this.scores[ category ][ level ].score ) {
+
+			this.scores[ category ][ level ] = {
 				score: score,
 				min: min,
 				sec: sec,
@@ -24,15 +43,20 @@ class Scoreboard {
 
 	}
 
-	update() {
+
+
+
+
+
+
+	saveScore() {
 
 		//get time
 		let time = game.time;
 
 		let min = Math.floor( Math.floor( ( game.time * 0.01 ) ) / 60 ) || 0;
 		let sec = Math.floor( ( game.time * 0.01 ) ) % 60 || 0;
-		let milliString = game.time.toString();
-		let millis = milliString.slice( - 2 );
+		let millis = time.toString().slice( - 2 );
 
 		if ( sec < 10 ) sec = "0" + sec;
 
@@ -40,15 +64,15 @@ class Scoreboard {
 		if ( min > 0 ) timeString = `<span id="min">${min}</span>:` + timeString;
 
 		//check if new record
-		this.newScore( game.level, time, min, sec, millis );
+		this.addScore( game.category, game.level, time, min, sec, millis );
 
 		//display scores
 		document.getElementById( 'levelTime' ).innerHTML = timeString;
 
 
 		//level record
-		let recordString = `<span id="sec">${this.levels[ game.level ].sec}</span>:` + `<span id="milli">${this.levels[ game.level ].millis}</span>`;
-		if ( this.levels[ game.level ].min > 0 ) recordString = `<span id="min">${this.levels[ game.level ].min}</span>:` + recordString;
+		let recordString = `<span id="sec">${this.scores[ game.category ][ game.level ].sec}</span>:` + `<span id="milli">${this.scores[ game.category ][ game.level ].millis}</span>`;
+		if ( this.scores[ game.category ][ game.level ].min > 0 ) recordString = `<span id="min">${this.scores[ game.category ][ game.level ].min}</span>:` + recordString;
 		document.getElementById( 'scoreboardTime' ).innerHTML = recordString;
 
 		this.save();
@@ -57,6 +81,13 @@ class Scoreboard {
 
 	}
 
+
+
+
+
+
+
+
 	updateScoreboardGrid() {
 
 		//update scoreboard grid on main menu
@@ -64,56 +95,59 @@ class Scoreboard {
 		grid.className = '';
 		grid.innerHTML = '';
 
-		for ( let i = 0; i < this.maxLevels; i ++ ) {
 
-			let pb = document.createElement( 'div' );
-			let p1 = document.createElement( 'p' );
-			let p2 = document.createElement( 'p' );
 
-			pb.id = 'playbutton';
-			pb.onclick = function () {
+		for ( let i = 0; i < this.levelCategories.length; i ++ ) {
 
-				game.level = i;
-				game.start();
+			let categoryDiv = document.createElement( 'div' );
+			categoryDiv.id = 'levelCategory';
 
-			};
+			let categoryTitle = document.createElement( 'p' );
+			categoryTitle.textContent = this.levelCategories[ i ];
+			categoryTitle.style.gridColumn = 'span 3';
+			categoryTitle.id = 'levelCategoryTitle';
+			categoryDiv.appendChild( categoryTitle );
 
-			//level name
-			// p1.textContent = `Level ${i + 1}`;
-			p1.textContent = this.levelNames[ i ];
+			for ( let j = 0; j < this.levelNames[ this.levelCategories[ i ] ].length; j ++ ) {
 
-			if ( this.levels[ i ] ) {
+				let pb = document.createElement( 'div' );
+				let p1 = document.createElement( 'p' );
+				let p2 = document.createElement( 'p' );
 
-				let timeString = `<span id="sec">${this.levels[ i ].sec}</span>:` + `<span id="milli">${this.levels[ i ].millis}</span>`;
-				if ( this.levels[ i ].min > 0 ) timeString = `<span id="min">${this.levels[ i ].min}</span>:` + timeString;
+				pb.id = 'playbutton';
+				pb.onclick = function () {
 
-				p2.innerHTML = timeString;
+					game.category = i;
+					game.level = j;
+					game.start();
 
-			} else {
+				};
 
-				p2.textContent = '--:--:--';
+				//level name
+				p1.textContent = this.levelNames[ this.levelCategories[ i ] ][ j ];
+
+				if ( this.scores[ i ] && this.scores[ i ][ j ] ) {
+
+					let timeString = `<span id="sec">${this.scores[ i ][ j ].sec}</span>:` + `<span id="milli">${this.scores[ i ][ j ].millis}</span>`;
+					if ( this.scores[ i ][ j ].min > 0 ) timeString = `<span id="min">${this.scores[ i ][ j ].min}</span>:` + timeString;
+
+					p2.innerHTML = timeString;
+
+				} else {
+
+					p2.textContent = '--:--:--';
+
+				}
+
+				categoryDiv.appendChild( pb );
+				categoryDiv.appendChild( p1 );
+				categoryDiv.appendChild( p2 );
 
 			}
 
-			grid.appendChild( pb );
-			grid.appendChild( p1 );
-			grid.appendChild( p2 );
+			grid.appendChild( categoryDiv );
 
 		}
-
-	}
-
-	reset() {
-
-		this.levels = [];
-		this.save();
-		this.updateScoreboardGrid();
-
-	}
-
-	save() {
-
-		localStorage.setItem( 'grappleHookScoreboard', JSON.stringify( this ) );
 
 	}
 

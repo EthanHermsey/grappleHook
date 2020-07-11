@@ -268,6 +268,16 @@ function initUI() {
 
 
 
+	//upload custom level click event
+	document.getElementById( 'uploadButton' ).addEventListener( 'click', function () {
+
+		game.fileOpener.click();
+
+	} );
+
+
+
+
 	// preload scoreboard grid on main menu
 	game.scoreboard.updateScoreboardGrid();
 

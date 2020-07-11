@@ -5,23 +5,43 @@ class GameManager {
 	constructor() {
 
 
-		this.levelNames = [
+		this.levelNames = {
 
-			'Block Islands',
-			'Test Environment 1',
-			'Test Environment 2',
-			'Floating Islands 1',
-			'Test Environment 3',
-			'Floating Islands 2',
-			'Test Environment 4',
-			'Test Environment 5',
-			'Big City 1',
-			'Big City 2',
+			'Floating Islands': [
+
+				'Block Islands',
+				'Floating Islands 1',
+				'Floating Islands 2',
+				'Floating Islands 3'
+
+			],
+			"Test Environment": [
+
+				'Test Environment 1',
+				'Test Environment 2',
+				'Test Environment 3',
+				'Test Environment 4',
+				'Test Environment 5'
+			],
+			"City": [
+
+				'Big City 1',
+				'Big City 2'
+
+			]
+
+		};
+
+		this.levelCategories = [
+
+			'Floating Islands',
+			'Test Environment',
+			'City'
 
 		];
 
+		this.category = 0;
 		this.level = 0;
-		this.maxLevels = this.levelNames.length;
 		this.running = false;
 
 		this.timer = null;
@@ -37,29 +57,9 @@ class GameManager {
 		//preload target texture
 		this.targetLensflareTexture = new THREE.TextureLoader().load( './resources/img/lensflare.png' );
 
-		//preload sound for target capture
-		this.targetSound = {
-			source: './resources/sound/beep.mp3',
-			volume: 50,
-			snd: null,
-			finish: false,
-			stop() {
+		//preload beep sound
+		this.targetSound = new Audio( './resources/sound/beep.mp3' );
 
-				document.body.removeChild( this.snd );
-
-			},
-			start() {
-
-				if ( this.finish ) return false;
-				this.snd = document.createElement( "embed" );
-				this.snd.setAttribute( "src", this.source );
-				this.snd.setAttribute( "hidden", "true" );
-				this.snd.setAttribute( "volume", this.volume );
-				this.snd.setAttribute( "autostart", "true" );
-				document.body.appendChild( this.snd );
-
-			}
-		};
 
 		//preload block textures
 		let loader = new THREE.TextureLoader();
@@ -76,10 +76,33 @@ class GameManager {
 
 		//load scoreboard values
 		let savedScoreboard = localStorage.getItem( 'grappleHookScoreboard' );
-		savedScoreboard = ( savedScoreboard ) ? JSON.parse( savedScoreboard ) : { levels: [] };
+		savedScoreboard = ( savedScoreboard ) ? JSON.parse( savedScoreboard ) : undefined;
 
 		//add score incrementer function
-		this.scoreboard = new Scoreboard( savedScoreboard, this.maxLevels, this.levelNames );
+		this.scoreboard = new Scoreboard( savedScoreboard, this.levelNames, this.levelCategories );
+
+
+		//file opener for imporing custom files
+		this.fileOpener = document.createElement( 'input' );
+		this.fileOpener.type = 'file';
+		this.fileOpener.accept = '.json';
+		this.fileOpener.addEventListener( 'change', () => {
+
+			let file = this.fileOpener.files[ 0 ];
+			if ( ! file ) return;
+
+			let reader = new FileReader();
+			reader.onload = ( res ) => {
+
+				this.start( JSON.parse( res.target.result ) );
+
+				this.fileOpener.value = '';
+
+			};
+			reader.readAsText( file );
+
+		} );
+
 
 	}
 
@@ -152,7 +175,7 @@ class GameManager {
 
 
 
-	start() {
+	start( json ) {
 
 		document.getElementById( 'main' ).classList.add( 'hidden' );
 		document.getElementById( 'levelScreen' ).classList.add( 'hidden' );
@@ -183,7 +206,9 @@ class GameManager {
 		document.addEventListener( 'fullscreenchange', fullscreenStop );
 
 
-		this.startLevel().then( ()=>{
+
+
+		this.startLevel( json ).then( ()=>{
 
 			clock.start();
 
@@ -201,13 +226,14 @@ class GameManager {
 
 	}
 
-	startLevel() {
+
+	startLevel( json ) {
 
 		return new Promise( ( resolve, reject ) =>{
 
 			this.running = true;
 
-			this.loadScene();
+			this.loadScene( json );
 
 			this.reset();
 
@@ -284,9 +310,16 @@ class GameManager {
 
 		this.level ++;
 
-		if ( this.level == this.maxLevels ) {
+		if ( this.level == this.levelNames[ this.levelCategories[ this.category ] ].length ) {
 
 			this.level = 0;
+
+			this.category ++;
+			if ( this.category == this.levelCategories.length ) {
+
+				this.category = 0;
+
+			}
 
 		}
 
@@ -300,7 +333,7 @@ class GameManager {
 
 		this.running = false;
 
-		this.scoreboard.update();
+		this.scoreboard.saveScore();
 
 		document.exitPointerLock();
 
@@ -331,8 +364,6 @@ class GameManager {
 	// 8""888P' `Y8bod8P' `Y8bod8P' o888o o888o `Y8bod8P'
 
 
-
-
 	loadScene( json ) {
 
 		if ( this.scene ) {
@@ -353,7 +384,9 @@ class GameManager {
 
 		} else {
 
-			loader.load( './resources/levels/' + this.levelNames[ this.level ] + '.json', ( model )=>{
+			let levelName = this.levelNames[ this.levelCategories[ this.category ] ][ this.level ];
+
+			loader.load( `./resources/levels/${levelName}.json`, ( model )=>{
 
 				this.loadModel( model );
 
@@ -494,7 +527,7 @@ class GameManager {
 
 	beep() {
 
-		this.targetSound.start();
+		this.targetSound.play();
 
 	}
 
