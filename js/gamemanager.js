@@ -7,14 +7,6 @@ class GameManager {
 
 		this.levelNames = {
 
-			'Floating Islands': [
-
-				'Block Islands',
-				'Floating Islands 1',
-				'Floating Islands 2',
-				'Floating Islands 3'
-
-			],
 			"Test Environment": [
 
 				'Test Environment 1',
@@ -22,11 +14,34 @@ class GameManager {
 				'Test Environment 3',
 				'Test Environment 4',
 				'Test Environment 5'
+
+			],
+			'Floating Islands': [
+
+				'Floating Islands 1',
+				'Floating Islands 2',
+				'Floating Islands 3',
+				'Floating Islands 4',
+				'Floating Icelands 5'
+
+			],
+			"Block Islands": [
+
+				'Block Islands 1',
+				'Block Islands 2',
+				'Block Islands 3'
+
+			],
+			"Tiny Planets": [
+
+				"Tiny Planets 1",
+				"Tiny Planets 2"
+
 			],
 			"City": [
 
-				'Big City 1',
-				'Big City 2'
+				'City 1',
+				'City 2'
 
 			]
 
@@ -34,14 +49,17 @@ class GameManager {
 
 		this.levelCategories = [
 
-			'Floating Islands',
 			'Test Environment',
+			'Floating Islands',
+			'Block Islands',
+			"Tiny Planets",
 			'City'
 
 		];
 
 		this.category = 0;
 		this.level = 0;
+		this.customLevel = false;
 		this.running = false;
 
 		this.timer = null;
@@ -94,6 +112,7 @@ class GameManager {
 			let reader = new FileReader();
 			reader.onload = ( res ) => {
 
+				this.customLevel = true;
 				this.start( JSON.parse( res.target.result ) );
 
 				this.fileOpener.value = '';
@@ -206,9 +225,7 @@ class GameManager {
 		document.addEventListener( 'fullscreenchange', fullscreenStop );
 
 
-
-
-		this.startLevel( json ).then( ()=>{
+		this.loadScene( json ).then( ()=>{
 
 			clock.start();
 
@@ -222,24 +239,20 @@ class GameManager {
 
 			}, 10 );
 
+			this.startLevel();
+
 		} );
 
 	}
 
 
-	startLevel( json ) {
+	startLevel() {
 
-		return new Promise( ( resolve, reject ) =>{
+		this.running = true;
 
-			this.running = true;
+		if ( document.getElementById( 'soundCheck' ).checked == true ) context.resume();
 
-			this.loadScene( json );
-
-			this.reset();
-
-			resolve();
-
-		} );
+		this.reset();
 
 	}
 
@@ -260,6 +273,8 @@ class GameManager {
 		this.time = 0;
 
 		clock.stop();
+
+		context.suspend();
 
 		this.running = false;
 		document.getElementById( 'three' ).classList.add( 'hidden' );
@@ -323,9 +338,15 @@ class GameManager {
 
 		}
 
-		this.startLevel();
-
 		document.getElementById( 'levelScreen' ).classList.add( 'hidden' );
+
+		this.customLevel = false;
+
+		this.loadScene().then( ()=>{
+
+			this.startLevel();
+
+		} );
 
 	}
 
@@ -333,7 +354,9 @@ class GameManager {
 
 		this.running = false;
 
-		this.scoreboard.saveScore();
+		context.suspend();
+
+		if ( ! this.customLevel ) this.scoreboard.saveScore();
 
 		document.exitPointerLock();
 
@@ -366,33 +389,39 @@ class GameManager {
 
 	loadScene( json ) {
 
-		if ( this.scene ) {
+		return new Promise( ( resolve, reject )=>{
 
-			scene.remove( this.scene );
+			if ( this.scene ) {
 
-		}
+				scene.remove( this.scene );
 
-		let loader = new THREE.ObjectLoader();
+			}
 
-		if ( json ) {
+			let loader = new THREE.ObjectLoader();
 
-			loader.parse( json, ( model )=>{
+			if ( json ) {
 
-				this.loadModel( model );
+				loader.parse( json, ( model )=>{
 
-			} );
+					this.loadModel( model );
 
-		} else {
+				} );
 
-			let levelName = this.levelNames[ this.levelCategories[ this.category ] ][ this.level ];
+			} else {
 
-			loader.load( `./resources/levels/${levelName}.json`, ( model )=>{
+				let levelName = this.levelNames[ this.levelCategories[ this.category ] ][ this.level ];
 
-				this.loadModel( model );
+				loader.load( `./resources/levels/${levelName}.json`, ( model )=>{
 
-			} );
+					this.loadModel( model );
 
-		}
+				} );
+
+			}
+
+			resolve();
+
+		} );
 
 	}
 

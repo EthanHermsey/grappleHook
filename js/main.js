@@ -43,6 +43,11 @@ let titleAnimation = {
 	}
 };
 
+//audio context
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+let context = new AudioContext();
+
+
 
 // three.js variables
 const clock = new THREE.Clock( false );
@@ -292,6 +297,15 @@ function initUI() {
 		}
 
 	} );
+
+
+	//sound checkbox fix
+	document.getElementById( 'soundDisplay' ).onclick = function () {
+
+		let checkbox = document.getElementById( 'soundCheck' );
+		checkbox.checked = ! checkbox.checked;
+
+	};
 
 
 	//fullscreen checkbox fix

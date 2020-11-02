@@ -50,6 +50,7 @@ class Player {
 
 		this.ropeObject = new Rope();
 
+		//load mobile controls
 		if ( mobile ) {
 
 			this.mobileController = new MobileControls();
@@ -67,6 +68,52 @@ class Player {
 			};
 
 		}
+
+
+		//load wind-noise
+
+		//create buffersources
+		this.windNoise = context.createBufferSource();
+		//create pink-noise buffer
+		let bufferSize = 2 * context.sampleRate;
+		let pinkBuffer = context.createBuffer( 1, bufferSize, context.sampleRate );
+		let noiseData = pinkBuffer.getChannelData( 0 );
+		let b0, b1, b2, b3, b4, b5, b6;
+		b0 = b1 = b2 = b3 = b4 = b5 = b6 = 0.0;
+		for ( let i = 0; i < bufferSize; i ++ ) {
+
+			let white = Math.random() * 2 - 1;
+			b0 = 0.99886 * b0 + white * 0.0555179;
+			b1 = 0.99332 * b1 + white * 0.0750759;
+			b2 = 0.96900 * b2 + white * 0.1538520;
+			b3 = 0.86650 * b3 + white * 0.3104856;
+			b4 = 0.55000 * b4 + white * 0.5329522;
+			b5 = - 0.7616 * b5 - white * 0.0168980;
+			noiseData[ i ] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+			noiseData[ i ] *= 0.11;
+
+			b6 = white * 0.115926;
+
+		}
+		//set pin-noise buffer on buffersource
+		this.windNoise.buffer = pinkBuffer;
+		this.windNoise.loop = true;
+		this.windNoise.start();
+
+		//create low-pass filter
+		this.filter = context.createBiquadFilter();
+		this.filter.type = 'lowpass';
+		this.filter.Q.value = 10;
+		this.filter.frequency.value = 600;
+
+		//add a gain
+		this.gain = context.createGain();
+		this.gain.gain.value = 0;
+
+		//connect it up!
+		this.windNoise.connect( this.filter );
+		this.filter.connect( this.gain );
+		this.gain.connect( context.destination );
 
 	}
 
@@ -121,6 +168,9 @@ class Player {
 		//move skybox
 		this.skybox.position.copy( this.position );
 
+		//update wind noise
+		this.updateWindNoise();
+
 	}
 
 	updateRope( delta ) {
@@ -139,6 +189,23 @@ class Player {
 			ropePos.y -= 5;
 
 			this.ropeObject.update( ropePos, this.ropeTarget );
+
+		}
+
+	}
+
+	updateWindNoise() {
+
+		if ( this.grounded ) {
+
+			this.gain.gain.value = 0;
+
+		} else {
+
+			let speed = Math.min( this.velocity.length(), 100 );
+
+			this.gain.gain.value = ( speed * speed ) * 0.00001;
+			this.filter.frequency.value = 600 + ( 20 * speed );
 
 		}
 
@@ -202,113 +269,17 @@ class Player {
 
 	move( delta ) {
 
-		let keyInput;
+		//acceleration vector3 by user input
+		let keyInput = this.getKeyInput();
 
-		if ( mobile ) {
-
-			keyInput = this.getMobileInput();
-
-		} else {
-
-			keyInput = this.getKeyInput();
-
-		}
-
-
-
-		if ( this.grounded ) {
-
-			if ( this.onRope ) {
-
-				keyInput.multiplyScalar( this.walkSpeed * 0.2 );
-
-			} else {
-
-				keyInput.multiplyScalar( this.walkSpeed );
-
-			}
-
-
-		} else {
-
-			keyInput.multiplyScalar( this.airwalkSpeed );
-
-		}
-
-
-		//set new velocity and postition
+		//add acceleration to velocity and velocity to postition.
 		this.nextVelocity.copy( this.velocity ).add( keyInput );
 		this.nextPosition.copy( this.position ).add( this.nextVelocity );
 
+		//check if new position collides with raycasting ( and bounces from surface )
+		this.raycastNextPosition();
 
-		let groundedOnBlocks = false;
-
-		//raycast game.blocks
-		game.blocks.forEach( block =>{
-
-			//broad phase
-			let bbDist = block.boundingBox.distanceToPoint( this.nextPosition );
-
-			if ( bbDist < 100 ) {
-
-				//narrow phase ( raycast )
-
-				//colliding downwards, otherwise in the velocity's direction
-				let intersectDown = this.collide( block, this.nextPosition, this.down );
-
-				if ( intersectDown && intersectDown.distance < this.height ) {
-
-					//calculate face normal
-					let normal = intersectDown.face.normal;
-					const normalMatrix = new THREE.Matrix3().getNormalMatrix( intersectDown.object.matrixWorld );
-					normal.applyMatrix3( normalMatrix ).setLength( this.velocity.length() );
-
-					//reflect velocity
-					this.nextVelocity.y *= - 0.25;
-
-					//set position
-					this.nextPosition.copy( intersectDown.point );
-					this.nextPosition.add( scene.up.clone().multiplyScalar( this.height + 0.2 ) );
-
-
-					//set grounded flag
-					groundedOnBlocks = true;
-
-				} else {
-
-					let intersectDirection = this.collide( block, this.nextPosition, this.nextVelocity.clone().normalize() );
-
-					if ( intersectDirection && intersectDirection.distance < this.height ) {
-
-						//bounce velocity
-						let direction = new THREE.Vector3().subVectors( intersectDirection.point, this.nextPosition ).normalize();
-
-						//calculate normal
-						let normal = intersectDirection.face.normal;
-						const normalMatrix = new THREE.Matrix3().getNormalMatrix( intersectDirection.object.matrixWorld );
-						normal.applyMatrix3( normalMatrix ).normalize();
-
-						this.nextVelocity.reflect( normal ).multiplyScalar( 0.4 );
-
-						//set position
-						this.nextPosition.copy( intersectDirection.point );
-						this.nextPosition.add( direction.multiplyScalar( - ( this.height + 0.2 ) ) );
-
-						//set grounded flag
-						groundedOnBlocks = true;
-
-					}
-
-				}
-
-			}
-
-		} );
-
-		//set grounded flag
-		this.grounded = groundedOnBlocks;
-
-		//set pos and velocity
+		//copy actual position and velocity
 		this.position.copy( this.nextPosition );
 		this.velocity.copy( this.nextVelocity );
 
@@ -368,6 +339,10 @@ class Player {
 
 		this.object.rotateY( e.movementX * - this.mouseSensitivity );
 		this.object.rotateX( e.movementY * - this.mouseSensitivity );
+
+		let half_pi = Math.PI * 0.5;
+		this.object.rotation.x = Math.max( - half_pi + 0.15, Math.min( this.object.rotation.x, half_pi - 0.15 ) );
+
 		this.object.rotation.z = 0;
 
 	}
@@ -476,6 +451,42 @@ class Player {
 
 	getKeyInput() {
 
+		let keyInput;
+		if ( mobile ) {
+
+			keyInput = this.getMobileInput();
+
+		} else {
+
+			keyInput = this.getKeyBoardInput();
+
+		}
+
+
+
+		if ( this.grounded ) {
+
+			if ( this.onRope ) {
+
+				keyInput.multiplyScalar( this.walkSpeed * 0.2 );
+
+			} else {
+
+				keyInput.multiplyScalar( this.walkSpeed );
+
+			}
+
+
+		} else {
+
+			keyInput.multiplyScalar( this.airwalkSpeed );
+
+		}
+
+	}
+
+	getKeyBoardInput() {
+
 		let d = new THREE.Vector3();
 
 		//x axis (left/right)
@@ -515,7 +526,72 @@ class Player {
 	// 888   .o8 888   888  888   888   888  888   888  888    .o
 	// `Y8bod8P' `Y8bod8P' o888o o888o o888o `Y8bod88P" `Y8bod8P'
 
+	raycastNextPosition() {
 
+		let groundedOnBlocks = false;
+
+		//raycast game.blocks
+		game.blocks.forEach( block =>{
+
+			//broad phase
+			let bbDist = block.boundingBox.distanceToPoint( this.nextPosition );
+
+			if ( bbDist < 100 ) {
+
+				//narrow phase ( raycast )
+				//first check down, to enable walking on surfaces. Otherwise check velocity direction
+
+				//colliding downwards, otherwise in the velocity's direction
+				let intersectDown = this.collide( block, this.nextPosition, this.down );
+
+				if ( intersectDown && intersectDown.distance < this.height ) {
+
+					//reflect velocity
+					this.nextVelocity.y *= - 0.25;
+
+					//set position from surface
+					this.nextPosition.copy( intersectDown.point );
+					this.nextPosition.add( scene.up.clone().multiplyScalar( this.height + 0.2 ) );
+
+					//set grounded flag
+					groundedOnBlocks = true;
+
+				} else {
+
+					//colliding in the direction of the velocity
+					let intersectDirection = this.collide( block, this.nextPosition, this.nextVelocity.clone().normalize() );
+
+					if ( intersectDirection && intersectDirection.distance < this.height ) {
+
+						//bounce velocity
+						let direction = new THREE.Vector3().subVectors( intersectDirection.point, this.nextPosition ).normalize();
+
+						//calculate normal
+						let normal = intersectDirection.face.normal;
+						const normalMatrix = new THREE.Matrix3().getNormalMatrix( intersectDirection.object.matrixWorld );
+						normal.applyMatrix3( normalMatrix ).normalize();
+
+						this.nextVelocity.reflect( normal ).multiplyScalar( 0.4 );
+
+						//set position from surface
+						this.nextPosition.copy( intersectDirection.point );
+						this.nextPosition.add( direction.multiplyScalar( - ( this.height + 0.2 ) ) );
+
+						//set grounded flag
+						groundedOnBlocks = true;
+
+					}
+
+				}
+
+			}
+
+		} );
+
+		//set grounded flag
+		this.grounded = groundedOnBlocks;
+
+	}
 
 	collide( object, point, direction ) {
 

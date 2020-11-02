@@ -40,6 +40,15 @@ class Target {
 
 	}
 
+	hide() {
+
+		this.active = false;
+		this.object.color.set( 'black' );
+		this.lensFlare.material.color.set( 'black' );
+
+	}
+
+
 	resetPoints() {
 
 		this.points = 0;

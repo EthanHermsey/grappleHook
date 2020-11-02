@@ -3,8 +3,6 @@ class Scoreboard {
 
 	constructor( savedScoreboard, levelNames, levelCategories ) {
 
-		console.log( typeof ( savedScoreboard ) );
-
 		this.scores = ( Array.isArray( savedScoreboard ) ) ? savedScoreboard : [];
 
 		this.levelNames = levelNames;
