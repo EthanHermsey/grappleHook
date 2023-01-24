@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+const mobile = false;
 
 class Player {
 
@@ -27,7 +29,7 @@ class Player {
 		this.nextVelocity = new THREE.Vector3();
 		this.nextPosition = new THREE.Vector3();
 		this.down = new THREE.Vector3( 0, - 1, 0 );
-		this.gravity = 28;
+		this.gravity = 38;
 
 		this.points = 0;
 		this.height = 100;
@@ -270,7 +272,7 @@ class Player {
 	move( delta ) {
 
 		//acceleration vector3 by user input
-		let keyInput = this.getKeyInput();
+		const keyInput = this.getKeyInput();
 
 		//add acceleration to velocity and velocity to postition.
 		this.nextVelocity.copy( this.velocity ).add( keyInput );
@@ -482,6 +484,8 @@ class Player {
 			keyInput.multiplyScalar( this.airwalkSpeed );
 
 		}
+
+		return keyInput;
 
 	}
 

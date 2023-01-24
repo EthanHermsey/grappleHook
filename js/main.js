@@ -1,13 +1,6 @@
 /* eslint-disable no-unused-vars */
 
 
-let mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test( navigator.userAgent );
-if ( mobile && window.location.href.includes( 'basis64' ) ) {
-
-	window.location.replace( "https://grapplehook.now.sh/" );
-
-}
-
 //title animation
 let titleAnimation = {
 
@@ -46,8 +39,6 @@ let titleAnimation = {
 //audio context
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 let context = new AudioContext();
-
-
 
 // three.js variables
 const clock = new THREE.Clock( false );
